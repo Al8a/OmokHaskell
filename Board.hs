@@ -75,7 +75,7 @@ module Board where
         | n == 1 = p : t                                                        
         | otherwise = h : markRow (n - 1) t p  
          
-                                                                {-
+    {-
     Is a place (x,y) of a board bd unmarked or a stone not placed? 
     The x and y are 1-based column and row indices. -}   
 

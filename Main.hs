@@ -19,25 +19,27 @@ module Main where
     Read a 1-based pair of indices (x, y) for player p, denoting an unmarked place in a board bd. 
     The function reads inputs from the standard input (stdin) 
     returns an IO value such as IO(Int,Int) or IO(Integer,Integer). -}
-    readXY :: [[Int]] -> Int -> IO(Int, Int)
-    readXY bd p = do
-        print (size bd)
-        putStrLn ("Player " ++ show p ++ " turn: enter x y coordinates (1-15 or -1 to quit)?") 
-        line <- getLine
-
-        let enteredCoordinates = map read (words line)
-        
-        if length enteredCoordinates /= 2 || head enteredCoordinates  < 1 || head enteredCoordinates > size bd || enteredCoordinates !! 1 < 0 || enteredCoordinates !! 1 > size bd then 
-            do
-                putStrLn "Invalid input!"
-                readXY bd p
-        
-        else if isMarked (head enteredCoordinates) (tail enteredCoordinates !! 1) bd then do
-            putStrLn "Place is not empty!"
-            readXY bd p
-        
-        else
-            return (head enteredCoordinates, enteredCoordinates !! 1)
+    readXY :: [[Int]] -> Int -> IO(Int, Int)                                                                                                                                                                                      
+    readXY bd p = do                                                                                                                                                                                                                          
+                    putStrLn (boardToStr playerToChar bd)                                                                                                                                                                                                 
+                    putStrLn "Enter x and y (1-15, e.g., 8 10 | Enter -1 to quit):"                                                                                                                                                                       
+                    line <- getLine                                                                                                                                                                                                                       
+                    let parsed = reads line :: [(Int, String)] in                                                                                                                                                                                         
+                        if null parsed then helperreadXY            -- empty input
+                        else let (x, _) = head parsed in            -- x is not empty.
+                            if x == -1 then return (-1, -1)         -- Quit.                                                            
+                            else if x > 0 && x <= size bd then 
+                                let parsed = reads (tail(tail line)) :: [(Int, String)] in
+                                if null parsed then helperreadXY 
+                                else let (y, _) = head parsed in    -- y is not empty.
+                                    if y == -1 then return (-1, -1)                                                                                                                                                                                                                                                                                                                                                                 
+                                    else if y > 0 && y <= size bd && isEmpty x y bd then return (x, y)  -- bound check coordinate inputs                                                                                                                                                                                             
+                                    else helperreadXY                                                                                                                                                                                                    
+                            else helperreadXY                                                                                                                                                                                                                 
+                    where                                                                                                                                                                                                                                 
+                        helperreadXY = do                                                                                                                                                                                                                      
+                            putStrLn "Invalid input!"                                                                                                                                                                                                     
+                            readXY bd p                                                                                       
     
 
     ------------------------------------------------------------------------------------
