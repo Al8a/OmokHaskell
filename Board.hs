@@ -5,16 +5,14 @@ module Board where
     Return an empty nxn board, where n is a positive number. 
     A 1-based pair of indices (x,y) will be used to access a specific place of the board
     x and y are column and row indices -}
-
-    mkBoard :: Int -> [[Int]]                                           
-    mkBoard n = [[0 | x <- [1 .. n]] | y <- [1 .. n]]  
+    mkBoard :: Int -> [[Int]]
+    mkBoard n = [[0 | x <- [1 .. n]] | y <- [1 .. n]]
 
 
     {-
     Create and return the first player. 
     Player = 1. 
     Refer to the first player -}
-
     mkPlayer :: Int
     mkPlayer = 1
 
@@ -22,7 +20,6 @@ module Board where
     {-
     Create and return the second player/rival 
     Opponent = 2 -}
-
     mkOpponent :: Int
     mkOpponent = 2
   
@@ -35,26 +32,24 @@ module Board where
     {- 
     Return a row y of a board bd, where y is a 1-based index. 
     It returns a list of size n, where n is the size of bd. -}
-
     row :: Int -> [[Int]] -> [Int]
-    row _ [[]] = []                                                             
-    row y (h:t)                                                               
-        | y == 1 = h                                                            
-        | otherwise = row (y - 1) t     
+    row _ [[]] = []
+    row y (h:t) 
+        | y == 1 = h 
+        | otherwise = row (y - 1) t 
 
     {-
     Return a column x of a board bd, where x is a 1-based index.
-    It returns a list of size n, where n is the size of bd. -}
-                                                                                                   
-    col :: Int -> [[Int]] -> [Int]                                              
-    col x bd = [row n bd !! (x - 1) | n <- [1 .. size bd]]                    
+    It returns a list of size n, where n is the size of bd. -}                                                                                       
+    col :: Int -> [[Int]] -> [Int] 
+    col x bd = [row n bd !! (x - 1) | n <- [1 .. size bd]]  
 
 
     -- Return diagonal at indicated (x, y) place.                               
-    diagonal :: Int -> Int -> [[Int]] -> [Int]                                  
-    diagonal x y bd                                                             
-        | (y - 1) < size bd && (x - 1) < size bd = row y bd !! (x - 1) : diagonal (x + 1) (y + 1) bd                                                         
-        | otherwise = []                   
+    diagonal :: Int -> Int -> [[Int]] -> [Int]  
+    diagonal x y bd  
+        | (y-1) < size bd && (x-1) < size bd = row y bd !! (x-1) : diagonal (x+1) (y+1) bd 
+        | otherwise = []
     
     ------------------------------------------------------------------------------------
     -- Part 2: Checking places and placing stones     
@@ -63,23 +58,21 @@ module Board where
     Mark a place (x,y) in a board bd by a player p 
     Where x and y are 1-based column and row indices.
     The specified place is assumed to be empty. -}
-
     mark :: Int -> Int -> [[Int]] -> Int -> [[Int]]
     mark x y (h:t) p
-        | y == 1 = markRow x h p : t         
+        | y == 1 = markRow x h p : t  
         | otherwise = h : mark x (y-1) t p
 
 
-    markRow :: Int -> [Int] -> Int -> [Int]                                     
-    markRow n (h:t) p                                                         
-        | n == 1 = p : t                                                        
-        | otherwise = h : markRow (n - 1) t p  
-         
-         
+    markRow :: Int -> [Int] -> Int -> [Int] 
+    markRow n (h:t) p 
+        | n == 1 = p : t  
+        | otherwise = h : markRow (n - 1) t p
+   
+     
     {-
     Is a place (x,y) of a board bd unmarked or a stone not placed? 
     The x and y are 1-based column and row indices. -}   
-
     isEmpty :: Int -> Int -> [[Int]] -> Bool
     isEmpty x y bd = place == 0
         where place = row y bd !! (x-1)
@@ -88,28 +81,26 @@ module Board where
     {-
     Does a place (x,y) of a board bd have a stone placed by a player p?
     The x and y are 1-based column and row indices.-} 
-
     isMarked :: Int -> Int -> [[Int]] -> Bool
     isMarked x y bd = not (isEmpty x y bd)
    
 
     {-Return the player of the stone placed on a place (x,y) of a board bd.
     The x and y are 1-based column and row indices. -}
-    
     isMarkedBy :: Int -> Int -> [[Int]] -> Int -> Bool
     isMarkedBy x y bd p
         | isEmpty x y bd = False
         | otherwise = row y bd !! (x-1) == p
    
 
-    -- Return the player of the stone placed on a place (x, y) of a board bd. (\Assuming not empty)                                                             
-    marker :: Int -> Int -> [[Int]] -> Int                                      
-    marker x y bd = row y bd !! (x - 1)       
+    -- Return the player of the stone placed on a place (x, y) of a board bd. (Assuming not empty)                                                             
+    marker :: Int -> Int -> [[Int]] -> Int
+    marker x y bd = row y bd !! (x - 1) 
 
     {-
     Are all places of board bd marked, i.e., there is no empty place? 
     Check if board fully marked by stones or not -}                       
-    isFull :: [[Int]] -> Bool                                                   
+    isFull :: [[Int]] -> Bool 
     isFull bd =  null (filter (\x -> x == 0) (concat bd))
 
     ------------------------------------------------------------------------------------
@@ -119,31 +110,29 @@ module Board where
     the board bd has a winning row for the player p? -}
     isWonBy :: [[Int]] -> Int -> Bool
     isWonBy bd p                                                                
-        | elem True ([hasWinSeq (row n bd) p | n <- [1 .. size bd]]) = True -- Horizontal                                                                      
-        | elem True ([hasWinSeq (col n bd) p | n <- [1 .. size bd]]) = True -- Vertical      
+        | elem True ([hasWinSeq (row n bd) p | n <- [1 .. size bd]]) = True -- Horizontal 
+        | elem True ([hasWinSeq (col n bd) p | n <- [1 .. size bd]]) = True -- Vertical 
 
-        | elem True ([hasWinSeq (diagonal n 1 bd) p | n <- [1 .. size bd]]) = True -- Top Diagonal                                                             
-        | elem True ([hasWinSeq (diagonal 1 n bd) p | n <- [1 .. size bd]]) = True -- Bottom Diagonal     
+        | elem True ([hasWinSeq (diagonal n 1 bd) p | n <- [1 .. size bd]]) = True -- Top Diagonal 
+        | elem True ([hasWinSeq (diagonal 1 n bd) p | n <- [1 .. size bd]]) = True -- Bottom Diagonal 
 
-        | elem True ([hasWinSeq (diagonal n 1 (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal                                               
-        | elem True ([hasWinSeq (diagonal 1 n (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal                                               
-        | otherwise = False                     
-    
-    
-    -- Check if given row/col has a win sequence.                               
-    hasWinSeq :: [Int] -> Int -> Bool                                           
-    hasWinSeq [] _ = False                                                      
-    hasWinSeq (h:t) p                                                         
-        | h == p && length t >= 4 && length ([n | n <- take 4 t, n == p]) == 4 = True                                                                          
+        | elem True ([hasWinSeq (diagonal n 1 (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal 
+        | elem True ([hasWinSeq (diagonal 1 n (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal 
+        | otherwise = False   
+
+    -- Check rows/columns for win sequence.                               
+    hasWinSeq :: [Int] -> Int -> Bool
+    hasWinSeq [] _ = False 
+    hasWinSeq (h:t) p 
+        | h == p && length t >= 4 && length ([n | n <- take 4 t, n == p]) == 4 = True
         | otherwise = hasWinSeq t p  
-
         
-    {-Is the game played on a board bd ended in a draw? -}
+    -- Has the stored in board bd ended in a draw? 
     isDraw :: [[Int]] -> Bool
     isDraw bd = isFull bd
 
 
-    {-Is the game played on a board bd over? -}
+    -- Is the game played on board bd over? 
     isGameOver :: [[Int]] -> Bool
     isGameOver bd 
         | isWonBy bd mkPlayer = True
@@ -167,17 +156,14 @@ module Board where
     boardToStr :: (Int -> Char) -> [[Int]] -> String
     boardToStr playerToChar bd = h1 ++ h2 ++ rows
         where 
-            h1 = "x " ++ concat([show (mod i 10 ) ++ " "| i <- [1 .. size bd]]) ++ "\n"
-            h2 = "y " ++ concat(["-" | i <- [1 .. size bd * 2]]) ++ "\n"
-            rows = concat([show(mod i 10) ++ "|" ++ rowToStr playerToChar (row i bd) | i <- [1 .. size bd]])
-
+            h1 = " x " ++ concat([show (mod i 10 ) ++ " "| i <- [1 .. size bd]]) ++ "\n"                      -- Printed column values 
+            h2 = "y " ++ concat(["-" | i <- [1 .. size bd * 2]]) ++ "\n"                                      -- Printed row values 
+            rows = concat([show(mod i 10) ++ "| " ++ rowToStr playerToChar (row i bd) | i <- [1 .. size bd]]) -- Row border bars
 
     -- Return a string representation of a row.
     rowToStr :: (Int -> Char) -> [Int] -> String
     rowToStr _ [] = "\n"
-    rowToStr f (h:t) = [f h] ++ " " ++ rowToStr f t
-
-
+    rowToStr row (h:t) = [row h] ++ " " ++ rowToStr row t
 
 
     {- Sample output provided 
