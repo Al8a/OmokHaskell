@@ -1,4 +1,10 @@
 module Board where 
+    {- 
+    Alan Ochoa  
+    Diana Garcia 
+    PROJECT 3: FUNCTIONAL PROGRAMMING WITH HASKELL
+    CS-3360 Design/Implementation Prog Lan -} 
+    ------------------------------------------------------------------------------------
     -- Part 1: Creating a board and accessing its elements
     
     {-
@@ -6,7 +12,7 @@ module Board where
     A 1-based pair of indices (x,y) will be used to access a specific place of the board
     x and y are column and row indices -}
     mkBoard :: Int -> [[Int]]
-    mkBoard n = [[0 | x <- [1 .. n]] | y <- [1 .. n]]
+    mkBoard n = [[0 | x <- [1..n]] | y <- [1..n]]
 
 
     {-
@@ -36,16 +42,16 @@ module Board where
     row _ [[]] = []
     row y (h:t) 
         | y == 1 = h 
-        | otherwise = row (y - 1) t 
+        | otherwise = row (y-1) t 
 
     {-
     Return a column x of a board bd, where x is a 1-based index.
-    It returns a list of size n, where n is the size of bd. -}                                                                                       
+    It returns a list of size n, where n is the size of bd. -}
     col :: Int -> [[Int]] -> [Int] 
-    col x bd = [row n bd !! (x - 1) | n <- [1 .. size bd]]  
+    col x bd = [row n bd !! (x-1) | n <- [1..size bd]]  
 
 
-    -- Return diagonal at indicated (x, y) place.                               
+    -- Return diagonal elements within board bounds at indicated (x,y) stone placement.
     diagonal :: Int -> Int -> [[Int]] -> [Int]  
     diagonal x y bd  
         | (y-1) < size bd && (x-1) < size bd = row y bd !! (x-1) : diagonal (x+1) (y+1) bd 
@@ -67,12 +73,13 @@ module Board where
     markRow :: Int -> [Int] -> Int -> [Int] 
     markRow n (h:t) p 
         | n == 1 = p : t  
-        | otherwise = h : markRow (n - 1) t p
+        | otherwise = h : markRow (n-1) t p
    
      
     {-
     Is a place (x,y) of a board bd unmarked or a stone not placed? 
-    The x and y are 1-based column and row indices. -}   
+    The x and y are 1-based column and row indices. 
+    1 - Player 1 | 2 - Player 2 | 0 - Empty -}   
     isEmpty :: Int -> Int -> [[Int]] -> Bool
     isEmpty x y bd = place == 0
         where place = row y bd !! (x-1)
@@ -85,7 +92,8 @@ module Board where
     isMarked x y bd = not (isEmpty x y bd)
    
 
-    {-Return the player of the stone placed on a place (x,y) of a board bd.
+    {- 
+    Return the player of the stone placed on a place (x,y) of a board bd.
     The x and y are 1-based column and row indices. -}
     isMarkedBy :: Int -> Int -> [[Int]] -> Int -> Bool
     isMarkedBy x y bd p
@@ -102,27 +110,30 @@ module Board where
     ------------------------------------------------------------------------------------
     -- Part 3: Determining the game outcome 
 
-    {-Is the game played on a board bd won by a player p? That is, does 
+    {-
+    Is the game played on a board bd won by a player p? That is, does 
     the board bd has a winning row for the player p? -}
     isWonBy :: [[Int]] -> Int -> Bool
     isWonBy bd p                                                                
-        | elem True ([hasWinSeq (row n bd) p | n <- [1 .. size bd]]) = True -- Horizontal 
-        | elem True ([hasWinSeq (col n bd) p | n <- [1 .. size bd]]) = True -- Vertical 
+        | elem True ([hasWinSeq (row n bd) p | n <- [1..size bd]]) = True -- Horizontal 
+        | elem True ([hasWinSeq (col n bd) p | n <- [1..size bd]]) = True -- Vertical 
 
-        | elem True ([hasWinSeq (diagonal n 1 bd) p | n <- [1 .. size bd]]) = True -- Top Diagonal 
-        | elem True ([hasWinSeq (diagonal 1 n bd) p | n <- [1 .. size bd]]) = True -- Bottom Diagonal 
+        | elem True ([hasWinSeq (diagonal n 1 bd) p | n <- [1..size bd]]) = True -- Top Diagonal 
+        | elem True ([hasWinSeq (diagonal 1 n bd) p | n <- [1..size bd]]) = True -- Bottom Diagonal 
 
-        | elem True ([hasWinSeq (diagonal n 1 (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal 
-        | elem True ([hasWinSeq (diagonal 1 n (reverse bd)) p | n <- [1 .. size bd]]) = True -- Reverse Diagonal 
+        | elem True ([hasWinSeq (diagonal n 1 (reverse bd)) p | n <- [1..size bd]]) = True -- Reverse Diagonal 
+        | elem True ([hasWinSeq (diagonal 1 n (reverse bd)) p | n <- [1..size bd]]) = True -- Reverse Diagonal 
         | otherwise = False   
 
-    -- Check rows/columns for win sequence.                               
+
+    -- Check rows/columns for win sequence.
     hasWinSeq :: [Int] -> Int -> Bool
     hasWinSeq [] _ = False 
     hasWinSeq (h:t) p 
         | h == p && length t >= 4 && length ([n | n <- take 4 t, n == p]) == 4 = True
         | otherwise = hasWinSeq t p  
         
+
     -- Has the stored in board bd ended in a draw? 
     isDraw :: [[Int]] -> Bool
     isDraw bd = isFull bd
@@ -150,11 +161,11 @@ module Board where
 
     --  Return a string representation of a board bd
     boardToStr :: (Int -> Char) -> [[Int]] -> String
-    boardToStr playerToChar bd = h1 ++ h2 ++ rows
+    boardToStr playerToChar bd = xaxis ++ yaxis ++ rows
         where 
-            h1 = " x " ++ concat([show (mod i 10 ) ++ " "| i <- [1 .. size bd]]) ++ "\n"                      -- Printed column values 
-            h2 = "y " ++ concat(["-" | i <- [1 .. size bd * 2]]) ++ "\n"                                      -- Printed row values 
-            rows = concat([show(mod i 10) ++ "| " ++ rowToStr playerToChar (row i bd) | i <- [1 .. size bd]]) -- Row border bars
+            xaxis = " x " ++ concat([show (mod i 10) ++ " "| i <- [1..size bd]]) ++ "\n"                    -- Printed column values 
+            yaxis = "y " ++ concat(["-" | i <- [1..size bd * 2]]) ++ "\n"                                   -- Printed row values 
+            rows = concat([show(mod i 10) ++ "| " ++ rowToStr playerToChar (row i bd) | i <- [1..size bd]]) -- Row border bars
 
     -- Return a string representation of a row.
     rowToStr :: (Int -> Char) -> [Int] -> String
@@ -182,6 +193,3 @@ module Board where
       5| . . . . . . . . . . . . . . .\n" 
       
       O's turn: enter x y (1-15 or -1 to quit)? 7 9 -}
-
-
-  
