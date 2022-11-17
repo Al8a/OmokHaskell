@@ -38,10 +38,9 @@ module Board where
 
     row :: Int -> [[Int]] -> [Int]
     row _ [[]] = []                                                             
-    row y (h : t)                                                               
+    row y (h:t)                                                               
         | y == 1 = h                                                            
         | otherwise = row (y - 1) t     
-
 
     {-
     Return a column x of a board bd, where x is a 1-based index.
@@ -67,13 +66,15 @@ module Board where
 
     mark :: Int -> Int -> [[Int]] -> Int -> [[Int]]
     mark x y (h:t) p
-        | y == 1 = markRow x h p : t
+        | y == 1 = markRow x h p : t         
         | otherwise = h : mark x (y-1) t p
-    
+
+
     markRow :: Int -> [Int] -> Int -> [Int]                                     
-    markRow n (h : t) p                                                         
+    markRow n (h:t) p                                                         
         | n == 1 = p : t                                                        
         | otherwise = h : markRow (n - 1) t p  
+         
          
     {-
     Is a place (x,y) of a board bd unmarked or a stone not placed? 
@@ -83,6 +84,7 @@ module Board where
     isEmpty x y bd = place == 0
         where place = row y bd !! (x-1)
 
+
     {-
     Does a place (x,y) of a board bd have a stone placed by a player p?
     The x and y are 1-based column and row indices.-} 
@@ -90,6 +92,7 @@ module Board where
     isMarked :: Int -> Int -> [[Int]] -> Bool
     isMarked x y bd = not (isEmpty x y bd)
    
+
     {-Return the player of the stone placed on a place (x,y) of a board bd.
     The x and y are 1-based column and row indices. -}
     
@@ -98,14 +101,16 @@ module Board where
         | isEmpty x y bd = False
         | otherwise = row y bd !! (x-1) == p
    
-     -- Return the player of the stone placed on a place (x, y) of a board bd. (\Assuming not empty)                                                             
+
+    -- Return the player of the stone placed on a place (x, y) of a board bd. (\Assuming not empty)                                                             
     marker :: Int -> Int -> [[Int]] -> Int                                      
     marker x y bd = row y bd !! (x - 1)       
 
-    {-Are all places of board bd marked, i.e., there is no empty place? -}
-    -- Check if board fully marked by stones or not.                            
+    {-
+    Are all places of board bd marked, i.e., there is no empty place? 
+    Check if board fully marked by stones or not -}                       
     isFull :: [[Int]] -> Bool                                                   
-    isFull bd =  length (filter (\x -> x == 0) (concat bd)) == 0     
+    isFull bd =  null (filter (\x -> x == 0) (concat bd))
 
     ------------------------------------------------------------------------------------
     -- Part 3: Determining the game outcome 
@@ -114,8 +119,8 @@ module Board where
     the board bd has a winning row for the player p? -}
     isWonBy :: [[Int]] -> Int -> Bool
     isWonBy bd p                                                                
-        | elem True ([hasWinSeq (row n bd) p | n <- [1 .. size bd]]) = True -- \Horizontal                                                                      
-        | elem True ([hasWinSeq (col n bd) p | n <- [1 .. size bd]]) = True -- \Vertical      
+        | elem True ([hasWinSeq (row n bd) p | n <- [1 .. size bd]]) = True -- Horizontal                                                                      
+        | elem True ([hasWinSeq (col n bd) p | n <- [1 .. size bd]]) = True -- Vertical      
 
         | elem True ([hasWinSeq (diagonal n 1 bd) p | n <- [1 .. size bd]]) = True -- Top Diagonal                                                             
         | elem True ([hasWinSeq (diagonal 1 n bd) p | n <- [1 .. size bd]]) = True -- Bottom Diagonal     
@@ -128,11 +133,11 @@ module Board where
     -- Check if given row/col has a win sequence.                               
     hasWinSeq :: [Int] -> Int -> Bool                                           
     hasWinSeq [] _ = False                                                      
-    hasWinSeq (h : t) p                                                         
+    hasWinSeq (h:t) p                                                         
         | h == p && length t >= 4 && length ([n | n <- take 4 t, n == p]) == 4 = True                                                                          
-        | otherwise = hasWinSeq t p                                             
-                                       
+        | otherwise = hasWinSeq t p  
 
+        
     {-Is the game played on a board bd ended in a draw? -}
     isDraw :: [[Int]] -> Bool
     isDraw bd = isFull bd
@@ -163,14 +168,14 @@ module Board where
     boardToStr playerToChar bd = h1 ++ h2 ++ rows
         where 
             h1 = "x " ++ concat([show (mod i 10 ) ++ " "| i <- [1 .. size bd]]) ++ "\n"
-            h2 = "y " ++ concat(["-" | i <- [1 .. ((size bd) * 2)]]) ++ "\n"
+            h2 = "y " ++ concat(["-" | i <- [1 .. size bd * 2]]) ++ "\n"
             rows = concat([show(mod i 10) ++ "|" ++ rowToStr playerToChar (row i bd) | i <- [1 .. size bd]])
 
 
     -- Return a string representation of a row.
     rowToStr :: (Int -> Char) -> [Int] -> String
     rowToStr _ [] = "\n"
-    rowToStr f (h : t) = [f h] ++ " " ++ rowToStr f t
+    rowToStr f (h:t) = [f h] ++ " " ++ rowToStr f t
 
 
 

@@ -23,22 +23,25 @@ module Main where
     readXY bd p = do                                                                                                                                                                                                                          
                     putStrLn (boardToStr playerToChar bd)                                                                                                                                                                                                 
                     putStrLn "Enter x and y (1-15, e.g., 8 10 | Enter -1 to quit):"                                                                                                                                                                       
-                    line <- getLine                                                                                                                                                                                                                       
-                    let parsed = reads line :: [(Int, String)] in                                                                                                                                                                                         
+                    line <- getLine        
+
+                    let parsed = reads line :: [(Int, String)] in 
                         if null parsed then helperreadXY            -- empty input
-                        else let (x, _) = head parsed in            -- x is not empty.
-                            if x == -1 then return (-1, -1)         -- Quit.                                                            
-                            else if x > 0 && x <= size bd then 
-                                let parsed = reads (tail(tail line)) :: [(Int, String)] in
-                                if null parsed then helperreadXY 
-                                else let (y, _) = head parsed in    -- y is not empty.
-                                    if y == -1 then return (-1, -1)                                                                                                                                                                                                                                                                                                                                                                 
-                                    else if y > 0 && y <= size bd && isEmpty x y bd then return (x, y)  -- bound check coordinate inputs                                                                                                                                                                                             
-                                    else helperreadXY                                                                                                                                                                                                    
-                            else helperreadXY                                                                                                                                                                                                                 
-                    where                                                                                                                                                                                                                                 
-                        helperreadXY = do                                                                                                                                                                                                                      
-                            putStrLn "Invalid input!"                                                                                                                                                                                                     
+                        else let (x, _) = head parsed in            
+                            if x == -1 then return (-1, -1)         -- Quit
+                            else if x > 0 && x <= size bd then      -- bound check 
+                                
+                                let parsed = reads (tail(tail line)) :: [(Int, String)] in 
+                                if null parsed then helperreadXY    -- empty input detected
+                                
+                                else let (y, _) = head parsed in     
+                                    if y == -1 then return (-1, -1) -- Quit                                                                                                                                                                                                                                                                                                                                                          
+                                    else if y > 0 && y <= size bd && isEmpty x y bd then return (x, y)                                                                                                                                                                                        
+                                    else helperreadXY                                                                                                                                                                                       
+                            else helperreadXY                       -- invaild 
+                    where                                                                                                                                                       
+                        helperreadXY = do                                                                                                                                                                             
+                            putStrLn "Invalid input!"                                                                                                                                                                        
                             readXY bd p                                                                                       
     
 
@@ -83,5 +86,4 @@ module Main where
                         
                         else do
                             mainHelper  bdOpponentMove
-
             
