@@ -65,7 +65,7 @@ module Main where
         putStrLn (boardToStr playerToChar playerMove)
 
         if isWonBy playerMove 1 then do
-            putStrLn "Player 1 is the winner!"
+            putStrLn "Player 1 - X | Winner!"
             return ()
 
         else do
@@ -74,11 +74,11 @@ module Main where
             putStrLn (boardToStr playerToChar opponentMove)
 
             if isWonBy opponentMove 2 then do
-                putStrLn "Player 2 is the winner!"
+                putStrLn "Player 2 - O | Winner!"
                 return ()
             
             else if isDraw opponentMove then do
-                putStrLn "Game is a draw!"
+                putStrLn "Game Draw!"
                 return ()
             
             else do

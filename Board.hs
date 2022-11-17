@@ -93,10 +93,6 @@ module Board where
         | otherwise = row y bd !! (x-1) == p
    
 
-    -- Return the player of the stone placed on a place (x, y) of a board bd. (Assuming not empty)                                                             
-    marker :: Int -> Int -> [[Int]] -> Int
-    marker x y bd = row y bd !! (x - 1) 
-
     {-
     Are all places of board bd marked, i.e., there is no empty place? 
     Check if board fully marked by stones or not -}                       
